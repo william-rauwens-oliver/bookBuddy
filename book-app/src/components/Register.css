@@ -1,0 +1,83 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .form-container {
+    background-color: #ffffff;
+    width: 400px;
+    padding: 40px;
+    border-radius: 20px; /* Coins arrondis */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .social-icons a {
+    font-size: 24px;
+    margin: 0 10px;
+    color: #333;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Coins arrondis */
+    outline: none;
+  }
+  
+  .error-message {
+    color: #ff0000;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: blueviolet;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px; /* Coins arrondis */
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  button:hover {
+    background-color: darkviolet;
+  }
+  
+  .signup-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: blueviolet;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .signup-link:hover {
+    color: darkviolet;
+  }
+  
+  .login-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: blueviolet;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
