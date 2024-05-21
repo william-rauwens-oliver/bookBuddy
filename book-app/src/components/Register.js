@@ -1,8 +1,7 @@
-// Register.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Importez le composant Link depuis react-router-dom
-import './Register.css'; // Importez les styles CSS ou utilisez des solutions de style en ligne
+import { Link } from 'react-router-dom';
+import './Register.css';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -23,7 +22,6 @@ const Register = () => {
       }
       const response = await axios.post('/api/auth/register', { name, email, password });
       console.log('Registration successful', response.data);
-      // Redirigez ou effectuez d'autres actions après une inscription réussie
     } catch (error) {
       console.error('Registration error', error);
       setError('Registration failed. Please try again.');

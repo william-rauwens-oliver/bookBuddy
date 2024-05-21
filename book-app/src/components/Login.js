@@ -31,7 +31,6 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      // Envoyez une demande pour réinitialiser le mot de passe avec resetEmail
       console.log('Password reset request for:', resetEmail);
     } catch (error) {
       console.error('Forgot password error', error);
