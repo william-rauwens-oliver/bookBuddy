@@ -5,9 +5,14 @@ const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
 
-const PORT = process.env.PORT || 5000;
+// Configure CORS to allow requests from localhost:3000
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true // If you are using cookies or sessions
+}));
+
+const PORT = process.env.PORT || 3000;
 
 mongoose.connect('mongodb://localhost:27017/bookApp', {
   useNewUrlParser: true,
