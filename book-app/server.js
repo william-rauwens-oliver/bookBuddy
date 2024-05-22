@@ -9,7 +9,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect('mongodb://localhost:27017/my_auth_app', {
+mongoose.connect('mongodb://localhost:27017/bookApp', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -20,7 +20,7 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('./src/routes/Auth'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
