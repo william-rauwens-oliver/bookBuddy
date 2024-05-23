@@ -20,11 +20,24 @@ const Register = () => {
         setError("Passwords don't match");
         return;
       }
-      const response = await axios.post('/api/auth/register', { name, email, password });
+      const response = await axios.post('http://localhost:5000/api/auth/register', { username: name, email, password, confirmPassword });
       console.log('Registration successful', response.data);
     } catch (error) {
-      console.error('Registration error', error);
-      setError('Registration failed. Please try again.');
+      console.error('Registration error:', error);
+      if (error.response) {
+        // Requête effectuée, mais le serveur a répondu avec un code d'erreur
+        console.error('Server responded with error data:', error.response.data);
+        console.error('Server responded with error status:', error.response.status);
+        setError(error.response.data.message); // Afficher le message d'erreur renvoyé par le serveur
+      } else if (error.request) {
+        // La requête a été effectuée, mais aucune réponse n'a été reçue
+        console.error('No response received from server:', error.request);
+        setError('No response received from server');
+      } else {
+        // Une erreur s'est produite lors de la configuration de la requête
+        console.error('Error setting up request:', error.message);
+        setError('Error setting up request');
+      }
     } finally {
       setLoading(false);
     }

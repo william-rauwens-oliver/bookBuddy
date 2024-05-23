@@ -7,7 +7,18 @@ const router = express.Router();
 
 // Route to register a new user
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
+
+  // Vérifier que tous les champs sont présents
+  if (!username || !email || !password || !confirmPassword) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Vérifier que les mots de passe correspondent
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords don't match" });
+  }
+
   try {
     const userExists = await User.findOne({ email });
 
@@ -22,6 +33,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ token });
   } catch (error) {
+    console.error("Error registering user:", error);
     res.status(500).json({ message: 'Server error' });
   }
 });
