@@ -88,7 +88,7 @@ const Register = () => {
             required
           />
           {error && <div className="error-message">{error}</div>}
-          <button type="submit" disabled={loading}>{loading ? 'Registering...' : 'Register'}</button>
+          <button type="submit" disabled={loading}>{loading ? 'Registering...' : 'Inscription'}</button>
           <Link to="/login" className="login-link">Vous avez un compte ? Connectez-vous</Link>
         </form>
       </div>
