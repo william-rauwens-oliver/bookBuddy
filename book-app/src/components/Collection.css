@@ -88,3 +88,18 @@
 .btn:hover {
   background-color: #0056b3;
 }
+
+.progress-bar-container {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 100%;
+  margin: 10px 0;
+  height: 20px;
+}
+
+.progress-bar {
+  background-color: #3b5998;
+  height: 100%;
+  transition: width 0.5s ease-in-out;
+}

@@ -18,7 +18,6 @@ const Collection = () => {
             key: '' // Remplacez par votre clé API Google Books
           }
         });
-        console.log(response, "toto")
         setBooks(response.data.items || []);
       } catch (error) {
         console.error('Error fetching books', error);
@@ -105,33 +104,45 @@ const Collection = () => {
       </div>
       
       <div className="book-grid">
-        {filteredBooks.map(book => (
-          <div className="book-card" key={book.id}>
-            <img 
-              src={book.volumeInfo?.imageLinks?.thumbnail || 'default-image-url.jpg'} 
-              className="book-image" 
-              alt={book.volumeInfo?.title || 'No title available'} 
-            />
-            <div className="book-details">
-              <h3 className="book-title">{book.volumeInfo?.title || 'No title available'}</h3>
-              <p className="book-author">{book.volumeInfo?.authors?.join(', ') || 'No author available'}</p>
-              <p className="book-category">{book.volumeInfo?.categories?.join(', ') || 'No category available'}</p>
-              <p className="book-pages">{book.volumeInfo?.pageCount ? `${book.volumeInfo.pageCount} pages` : 'No page count available'}</p>
-              <p className="book-status"><strong>Status:</strong> {book.volumeInfo?.maturityRating || 'No status available'}</p>
-              <p className="book-badge">{readingStatus[book.id] ? getBadgeForPages(readingStatus[book.id]) : 'No badge earned yet'}</p>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const newPage = e.target.elements.page.value;
-                updateReadingStatus(book.id, newPage);
-              }}>
-                <input type="number" name="page" placeholder="Dernière page lue" />
-                <button type="submit">Mettre à jour</button>
-              </form>
-              <button onClick={() => handleBookDetails(book.id)} className="btn btn-primary">Details</button>
-              <button onClick={() => markAsFavorite(book.id)} className="btn btn-secondary">Favori</button>
+        {filteredBooks.map(book => {
+          const pagesRead = readingStatus[book.id] || 0;
+          const totalPages = book.volumeInfo?.pageCount || 1;
+          const progressPercentage = (pagesRead / totalPages) * 100;
+
+          return (
+            <div className="book-card" key={book.id}>
+              <img 
+                src={book.volumeInfo?.imageLinks?.thumbnail || 'default-image-url.jpg'} 
+                className="book-image" 
+                alt={book.volumeInfo?.title || 'No title available'} 
+              />
+              <div className="book-details">
+                <h3 className="book-title">{book.volumeInfo?.title || 'No title available'}</h3>
+                <p className="book-author">{book.volumeInfo?.authors?.join(', ') || 'No author available'}</p>
+                <p className="book-category">{book.volumeInfo?.categories?.join(', ') || 'No category available'}</p>
+                <p className="book-pages">{book.volumeInfo?.pageCount ? `${book.volumeInfo.pageCount} pages` : 'No page count available'}</p>
+                <p className="book-status"><strong>Status:</strong> {book.volumeInfo?.maturityRating || 'No status available'}</p>
+                <p className="book-badge">{pagesRead ? getBadgeForPages(pagesRead) : 'No badge earned yet'}</p>
+                <div className="progress-bar-container">
+                  <div 
+                    className="progress-bar" 
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const newPage = e.target.elements.page.value;
+                  updateReadingStatus(book.id, newPage);
+                }}>
+                  <input type="number" name="page" placeholder="Dernière page lue" />
+                  <button type="submit">Mettre à jour</button>
+                </form>
+                <button onClick={() => handleBookDetails(book.id)} className="btn btn-primary">Details</button>
+                <button onClick={() => markAsFavorite(book.id)} className="btn btn-secondary">Favori</button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
