@@ -5,6 +5,8 @@ import './Collection.css';
 const Collection = () => {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [readingStatus, setReadingStatus] = useState({});
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -15,6 +17,7 @@ const Collection = () => {
             key: '' // Remplacez par votre clé API Google Books
           }
         });
+        console.log(response, "toto")
         setBooks(response.data.items || []);
       } catch (error) {
         console.error('Error fetching books', error);
@@ -54,9 +57,44 @@ const Collection = () => {
     return title.includes(searchTerm.toLowerCase()) || authors.includes(searchTerm.toLowerCase());
   });
 
+  const updateReadingStatus = (bookId, page) => {
+    setReadingStatus(prevStatus => ({
+      ...prevStatus,
+      [bookId]: page
+    }));
+  };
+
+  const markAsFavorite = async (bookId) => {
+    try {
+      const bookToAdd = filteredBooks.find(book => book.id === bookId);
+      await axios.post('http://localhost:5000/api/favorites', {
+        title: bookToAdd.volumeInfo.title,
+        author: JSON.stringify(bookToAdd.volumeInfo.authors),
+        // categories: bookToAdd.volumeInfo.categories,
+        pages: parseInt(bookToAdd.volumeInfo.pageCount),
+        published: bookToAdd.volumeInfo.maturityRating
+      });
+      setFavorites(prevFavorites => [...prevFavorites, bookId]);
+    } catch (error) {
+      console.error('Error marking as favorite', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const renderFavorites = () => {
+    return (
+      <div className="favorite-books">
+        <h2>Mes favoris</h2>
+        {favorites.map(bookId => (
+          <div className="favorite-book" key={bookId}>
+            <span>{bookId}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div>
-      {/* Barre de recherche */}
+    <div className="collection-container">
       <div className="search-bar">
         <input 
           type="text" 
@@ -67,7 +105,6 @@ const Collection = () => {
         />
       </div>
       
-      {/* Liste des livres */}
       <div className="book-grid">
         {filteredBooks.map(book => (
           <div className="book-card" key={book.id}>
@@ -77,16 +114,29 @@ const Collection = () => {
               alt={book.volumeInfo?.title || 'No title available'} 
             />
             <div className="book-details">
-              <h5 className="book-title">{book.volumeInfo?.title || 'No title available'}</h5>
+              <h3 className="book-title">{book.volumeInfo?.title || 'No title available'}</h3>
               <p className="book-author">{book.volumeInfo?.authors?.join(', ') || 'No author available'}</p>
-              <p className="book-category"><small>{book.volumeInfo?.categories?.join(', ') || 'No category available'}</small></p>
+              <p className="book-category">{book.volumeInfo?.categories?.join(', ') || 'No category available'}</p>
               <p className="book-pages">{book.volumeInfo?.pageCount ? `${book.volumeInfo.pageCount} pages` : 'No page count available'}</p>
               <p className="book-status"><strong>Status:</strong> {book.volumeInfo?.maturityRating || 'No status available'}</p>
+              {readingStatus[book.id] !== undefined && (
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const newPage = e.target.elements.page.value;
+                  updateReadingStatus(book.id, newPage);
+                }}>
+                  <input type="number" name="page" placeholder="Dernière page lue" />
+                  <button type="submit">Mettre à jour</button>
+                </form>
+              )}
               <button onClick={() => handleBookDetails(book.id)} className="btn btn-primary">Details</button>
+              <button onClick={() => markAsFavorite(book.id)} className="btn btn-secondary">Favori</button>
             </div>
           </div>
         ))}
       </div>
+
+      {favorites.length > 0 && renderFavorites()}
     </div>
   );
 };
