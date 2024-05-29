@@ -68,6 +68,17 @@ app.post('/api/favorites', async (req, res) => {
   }
 });
 
+// Route pour récupérer tous les livres en favoris
+app.get('/api/favorites', async (req, res) => {
+  try {
+    const favorites = await Book.find({});
+    res.status(200).json(favorites);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des favoris', error);
+    res.status(500).json({ message: 'Erreur du serveur' });
+  }
+});
+
 // Lancement du serveur
 app.listen(PORT, () => {
   console.log(`Le serveur fonctionne sur le port ${PORT}`);
