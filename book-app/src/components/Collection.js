@@ -26,6 +26,18 @@ const Collection = () => {
     fetchBooks();
   }, []);
 
+  useEffect(() => {
+    const fetchBooksFromServer = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/books'); // Modifier l'URL selon votre configuration
+        setBooks(response.data || []);
+      } catch (error) {
+        console.error('Error fetching books from server', error);
+      }
+    };
+    fetchBooksFromServer();
+  }, []);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -151,10 +163,7 @@ const Collection = () => {
                   <div>
                     <p className="book-badge">{pagesRead ? getBadgeForPages(pagesRead) : 'No badge earned yet'}</p>
                     <div className="progress-bar-container">
-                      <div 
-                        className="progress-bar" 
-                        style={{ width: `${progressPercentage}%` }}
-                      ></div>
+                      <div className="progress-bar" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
                     <form onSubmit={(e) => {
                       e.preventDefault();

@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Book = require('./src/models/Book'); // Assurez-vous que le chemin vers votre modèle Book est correct
-const Auth = require('./src/routes/Auth');
 
 // Initialisation de l'application Express
 const app = express();
@@ -16,7 +15,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(bodyParser.json());
-app.use(Auth);
 
 // Port d'écoute du serveur
 const PORT = process.env.PORT || 5000;
@@ -43,6 +41,16 @@ const statusSchema = new mongoose.Schema({
 
 // Création du modèle pour la collection 'status'
 const Status = mongoose.model('Status', statusSchema);
+
+app.get('/api/books', async (req, res) => {
+  try {
+    const books = await Book.find({});
+    res.status(200).json(books);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des livres', error);
+    res.status(500).json({ message: 'Erreur du serveur' });
+  }
+});
 
 // Route pour mettre à jour le statut de lecture et la page actuelle de lecture d'un livre
 app.put('/api/statut/:bookId', async (req, res) => {
@@ -120,6 +128,34 @@ app.get('/api/favorites', async (req, res) => {
     res.status(200).json(favorites);
   } catch (error) {
     console.error('Erreur lors de la récupération des favoris', error);
+    res.status(500).json({ message: 'Erreur du serveur' });
+  }
+});
+
+// Route pour ajouter un nouveau livre
+app.post('/api/books', async (req, res) => {
+  try {
+    // Récupération des données du livre à partir du corps de la requête
+    const { title, author, image, status, pageCount, category } = req.body;
+
+    // Création d'une nouvelle instance de livre
+    const newBook = new Book({
+      title,
+      author,
+      image,
+      status,
+      pageCount,
+      category
+    });
+
+    // Enregistrement du livre dans la base de données MongoDB
+    await newBook.save();
+
+    // Réponse réussie
+    res.status(201).json({ message: 'Livre ajouté avec succès' });
+  } catch (error) {
+    // Gestion des erreurs
+    console.error('Erreur lors de l\'ajout du livre', error);
     res.status(500).json({ message: 'Erreur du serveur' });
   }
 });

@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Collection from './components/Collection';
 import HomePage from './components/HomePage';
 import FavoritesPage from './components/Favoris';
+import Formulaire from './components/Formulaire';
 
 const App = () => {
   return (
@@ -26,6 +27,9 @@ const App = () => {
                 <li className="nav-item">
                   <Link className="nav-link" to="/favorites">Favorites</Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/formulaire">Formulaire</Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -38,6 +42,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/collection" element={<Collection />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/formulaire" element={<Formulaire />} />
           </Routes>
         </div>
       </div>
