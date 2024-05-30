@@ -14,8 +14,8 @@ const Collection = () => {
       try {
         const response = await axios.get('https://www.googleapis.com/books/v1/volumes', {
           params: {
-            q: 'fiction', // Termes de recherche par défaut
-            key: '' // Remplacez par votre clé API Google Books
+            q: 'fiction',
+            key: ''
           }
         });
         setBooks(response.data.items || []);
@@ -62,18 +62,28 @@ const Collection = () => {
     return title.includes(searchTerm.toLowerCase()) || authors.includes(searchTerm.toLowerCase());
   });
 
-  const updateReadingStatus = (bookId, page) => {
-    setReadingStatus(prevStatus => ({
-      ...prevStatus,
-      [bookId]: parseInt(page)
-    }));
-
-    const totalPagesRead = Object.values(readingStatus).reduce((total, page) => total + page, 0);
-    const badge = getBadgeForPages(totalPagesRead);
-    if (!badgesEarned.includes(badge)) {
-      setBadgesEarned(prevBadges => [...prevBadges, badge]);
+  const updateReadingStatus = async (bookId, page) => {
+    try {
+      // Envoi des données au backend pour mise à jour dans la base de données
+      await axios.put(`http://localhost:5000/api/statut/${bookId}`, {
+        status: readingStatus[bookId]?.status || 'à lire plus tard',
+        currentPage: page
+      });
+      // Mise à jour de l'état local si la requête réussit
+      setReadingStatus(prevStatus => ({
+        ...prevStatus,
+        [bookId]: { ...prevStatus[bookId], page }
+      }));
+      // Gestion des badges
+      const totalPagesRead = Object.values(readingStatus).reduce((total, book) => total + (book.page || 0), 0);
+      const badge = getBadgeForPages(totalPagesRead);
+      if (!badgesEarned.includes(badge)) {
+        setBadgesEarned(prevBadges => [...prevBadges, badge]);
+      }
+    } catch (error) {
+      console.error('Error updating reading status', error.response ? error.response.data : error.message);
     }
-  };
+  };  
 
   const markAsFavorite = async (bookId) => {
     try {
@@ -91,6 +101,13 @@ const Collection = () => {
     }
   };
 
+  const handleStatusChange = (bookId, status) => {
+    setReadingStatus(prevStatus => ({
+      ...prevStatus,
+      [bookId]: { ...prevStatus[bookId], status }
+    }));
+  };
+
   return (
     <div className="collection-container">
       <div className="search-bar">
@@ -105,7 +122,8 @@ const Collection = () => {
       
       <div className="book-grid">
         {filteredBooks.map(book => {
-          const pagesRead = readingStatus[book.id] || 0;
+          const bookStatus = readingStatus[book.id]?.status || 'à lire plus tard';
+          const pagesRead = readingStatus[book.id]?.page || 0;
           const totalPages = book.volumeInfo?.pageCount || 1;
           const progressPercentage = (pagesRead / totalPages) * 100;
 
@@ -121,22 +139,33 @@ const Collection = () => {
                 <p className="book-author">{book.volumeInfo?.authors?.join(', ') || 'No author available'}</p>
                 <p className="book-category">{book.volumeInfo?.categories?.join(', ') || 'No category available'}</p>
                 <p className="book-pages">{book.volumeInfo?.pageCount ? `${book.volumeInfo.pageCount} pages` : 'No page count available'}</p>
-                <p className="book-status"><strong>Status:</strong> {book.volumeInfo?.maturityRating || 'No status available'}</p>
-                <p className="book-badge">{pagesRead ? getBadgeForPages(pagesRead) : 'No badge earned yet'}</p>
-                <div className="progress-bar-container">
-                  <div 
-                    className="progress-bar" 
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
-                </div>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  const newPage = e.target.elements.page.value;
-                  updateReadingStatus(book.id, newPage);
-                }}>
-                  <input type="number" name="page" placeholder="Dernière page lue" />
-                  <button type="submit">Mettre à jour</button>
-                </form>
+                <p className="book-status">
+                  <strong>Status:</strong>
+                  <select value={bookStatus} onChange={(e) => handleStatusChange(book.id, e.target.value)}>
+                    <option value="à lire plus tard">À lire plus tard</option>
+                    <option value="en cours de lecture">En cours de lecture</option>
+                    <option value="lecture finie">Lecture finie</option>
+                  </select>
+                </p>
+                {bookStatus === 'en cours de lecture' && (
+                  <div>
+                    <p className="book-badge">{pagesRead ? getBadgeForPages(pagesRead) : 'No badge earned yet'}</p>
+                    <div className="progress-bar-container">
+                      <div 
+                        className="progress-bar" 
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      const newPage = e.target.elements.page.value;
+                      updateReadingStatus(book.id, newPage);
+                    }}>
+                      <input type="number" name="page" placeholder="Dernière page lue" />
+                      <button type="submit">Mettre à jour</button>
+                    </form>
+                  </div>
+                )}
                 <button onClick={() => handleBookDetails(book.id)} className="btn btn-primary">Details</button>
                 <button onClick={() => markAsFavorite(book.id)} className="btn btn-secondary">Favori</button>
               </div>

@@ -12,9 +12,11 @@ const app = express();
 // Configuration CORS
 app.use(cors({
   origin: ['http://localhost:3000'],
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT"],
   credentials: true
-}), bodyParser.json(), Auth);
+}));
+app.use(bodyParser.json());
+app.use(Auth);
 
 // Port d'écoute du serveur
 const PORT = process.env.PORT || 5000;
@@ -32,17 +34,60 @@ db.once('open', () => {
   console.log('Connecté à MongoDB');
 });
 
-app.get('/toto', async (req, res) => {
-  res.status(200).json({ message: 'plop' });
+// Définition du modèle pour la collection 'status'
+const statusSchema = new mongoose.Schema({
+  bookId: String,
+  status: String,
+  currentPage: Number
+});
+
+// Création du modèle pour la collection 'status'
+const Status = mongoose.model('Status', statusSchema);
+
+// Route pour mettre à jour le statut de lecture et la page actuelle de lecture d'un livre
+app.put('/api/statut/:bookId', async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const { status, currentPage } = req.body;
+
+    // Vérifiez que la valeur de currentPage est un nombre valide
+    const pageNumber = parseInt(currentPage);
+    if (isNaN(pageNumber)) {
+      throw new Error('currentPage doit être un nombre valide');
+    }
+
+    // Vérifiez si une entrée de statut existe déjà pour ce livre
+    let existingStatus = await Status.findOne({ bookId });
+
+    // Si aucune entrée de statut n'existe, créez-en une
+    if (!existingStatus) {
+      existingStatus = new Status({
+        bookId,
+        status,
+        currentPage: pageNumber
+      });
+    } else {
+      // Sinon, mettez à jour l'entrée de statut existante
+      existingStatus.status = status;
+      existingStatus.currentPage = pageNumber;
+    }
+
+    // Enregistrez ou mettez à jour l'entrée de statut dans la base de données MongoDB
+    await existingStatus.save();
+
+    res.status(200).json({ message: 'Statut de lecture mis à jour avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du statut de lecture', error);
+    res.status(500).json({ message: 'Erreur du serveur' });
+  }
 });
 
 // Route pour ajouter un livre aux favoris
 app.post('/api/favorites', async (req, res) => {
-  console.log(req.body, 'toto');
   try {
     // Récupération des données du livre à ajouter aux favoris depuis le corps de la requête
     let { title, author, pages, published } = req.body;
-    
+
     // Vérification de la valeur de pages
     if (!pages) {
       pages = 1;
