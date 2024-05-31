@@ -5,25 +5,23 @@ const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
-// Route to register a new user
-router.post('/api/auth/register', async (req, res) => {
+// Route pour enregistrer un nouvel utilisateur
+router.post('/register', async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
-  // Vérifier que tous les champs sont présents
   if (!username || !email || !password || !confirmPassword) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "Tous les champs sont requis" });
   }
 
-  // Vérifier que les mots de passe correspondent
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Passwords don't match" });
+    return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
   }
 
   try {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: "L'utilisateur existe déjà" });
     }
 
     const user = new User({ username, email, password });
@@ -33,57 +31,57 @@ router.post('/api/auth/register', async (req, res) => {
 
     res.status(201).json({ token });
   } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Erreur lors de l'inscription de l'utilisateur:", error);
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
-// Route to login a user
-router.post('/api/auth/login', async (req, res) => {
+// Route pour connecter un utilisateur
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Identifiants invalides' });
     }
 
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Identifiants invalides' });
     }
 
     const token = jwt.sign({ id: user._id }, 'B5#z6XgD!9s2@jR', { expiresIn: '1h' });
 
     res.status(200).json({ token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
-// Route to update password
+// Route pour mettre à jour le mot de passe
 router.put('/update-password', async (req, res) => {
   const { userId, currentPassword, newPassword } = req.body;
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(400).json({ message: 'Utilisateur non trouvé' });
     }
 
     const isMatch = await user.matchPassword(currentPassword);
 
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid current password' });
+      return res.status(400).json({ message: 'Mot de passe actuel incorrect' });
     }
 
     user.password = newPassword;
     await user.save();
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: 'Mot de passe mis à jour avec succès' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 

@@ -33,6 +33,8 @@ db.once('open', () => {
   console.log('Connecté à MongoDB');
 });
 
+app.use('/api/auth', require('./src/routes/Auth'));
+
 // Définition du modèle pour la collection 'status'
 const statusSchema = new mongoose.Schema({
   bookId: String,
