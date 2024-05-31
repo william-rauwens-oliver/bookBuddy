@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import './Login.css'; 
 
 const Login = () => {
@@ -11,6 +11,8 @@ const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
 
+  const navigate = useNavigate(); // Créer une instance de useNavigate
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -18,6 +20,7 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       console.log('Connexion réussie', response.data);
+      navigate('/Collection'); // Rediriger vers la page Collection après une connexion réussie
     } catch (error) {
       console.error('Erreur de connexion:', error);
       if (error.response) {
