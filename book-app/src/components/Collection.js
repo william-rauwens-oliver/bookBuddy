@@ -98,8 +98,11 @@ const Collection = () => {
   };  
 
   const markAsFavorite = async (bookId) => {
+    const bookToAdd = filteredBooks.find(book => book.id === bookId);
+    console.log('bookid',bookId,bookToAdd,'bookToAdd');
     try {
-      const bookToAdd = filteredBooks.find(book => book.id === bookId);
+      //attribuer schéma favoris
+
       await axios.post('http://localhost:5000/api/favorites', {
         title: bookToAdd.volumeInfo.title,
         author: JSON.stringify(bookToAdd.volumeInfo.authors),
