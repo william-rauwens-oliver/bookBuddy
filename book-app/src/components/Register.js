@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
 
 const Register = () => {
@@ -10,6 +10,8 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const navigate = useNavigate(); // Créer une instance de useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ const Register = () => {
       }
       const response = await axios.post('http://localhost:5000/api/auth/register', { username: name, email, password, confirmPassword });
       console.log('Registration successful', response.data);
+      navigate('/Collection'); // Rediriger vers la page Collection après une inscription réussie
     } catch (error) {
       console.error('Registration error:', error);
       if (error.response) {
