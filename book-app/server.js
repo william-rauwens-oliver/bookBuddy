@@ -3,7 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Book = require('./src/models/Book'); // Assurez-vous que le chemin vers votre modèle Book est correct
+const Book = require('./src/models/Book');
+const Favoris = require('./src/models/Favoris'); // Assurez-vous que le chemin vers votre modèle Book est correct
 
 // Initialisation de l'application Express
 const app = express();
@@ -92,39 +93,40 @@ app.put('/api/statut/:bookId', async (req, res) => {
 
 // Route pour ajouter un livre aux favoris
 app.post('/api/favorites', async (req, res) => {
+  console.log(req.body,'toto')
+  // Récupération des données du livre à ajouter aux favoris depuis le corps de la requête
+  let { title, author, pages, published } = req.body;
+  
+  // Vérification de la valeur de pages
+  if (!pages) {
+    pages = 1;
+  }
+  
+  // Création d'une nouvelle instance de livre
+  const newFavoris = new Favoris({
+    title,
+    author,
+    pages,
+    published
+  });
+  
   try {
-    // Récupération des données du livre à ajouter aux favoris depuis le corps de la requête
-    let { title, author, pages, published } = req.body;
-
-    // Vérification de la valeur de pages
-    if (!pages) {
-      pages = 1;
-    }
-
-    // Création d'une nouvelle instance de livre
-    const newBook = new Book({
-      title,
-      author,
-      pages,
-      published
-    });
-
     // Enregistrement du livre dans la base de données MongoDB
-    await newBook.save();
-
+    const toto = await newFavoris.save(newFavoris);
+    console.log(toto,'titi')
     // Réponse réussie
-    res.status(201).json({ message: 'Livre ajouté aux favoris avec succès' });
+    res.status(201).json({ message: 'Livre ajouté aux favoris avec succès', book: toto });
   } catch (error) {
     // Gestion des erreurs
     console.error('Erreur lors de l\'ajout du livre aux favoris', error);
-    res.status(500).json({ message: 'Erreur du serveur' });
+    res.status(403).json({ message: 'Erreur du serveur' });
   }
 });
 
 // Route pour récupérer tous les livres en favoris
-app.get('/api/favorites', async (req, res) => {
+app.get('/api/favoris', async (req, res) => {
   try {
-    const favorites = await Book.find({});
+    const favorites = await Favoris.find({});
     res.status(200).json(favorites);
   } catch (error) {
     console.error('Erreur lors de la récupération des favoris', error);
@@ -136,16 +138,13 @@ app.get('/api/favorites', async (req, res) => {
 app.post('/api/books', async (req, res) => {
   try {
     // Récupération des données du livre à partir du corps de la requête
-    const { title, author, image, status, pageCount, category } = req.body;
+    const { title, author, pages } = req.body;
 
     // Création d'une nouvelle instance de livre
     const newBook = new Book({
       title,
       author,
-      image,
-      status,
-      pageCount,
-      category
+      pages,
     });
 
     // Enregistrement du livre dans la base de données MongoDB

@@ -9,7 +9,7 @@ const Favoris = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/favorites');
+        const response = await axios.get('http://localhost:5000/api/favoris');
         setFavorites(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des favoris', error);
@@ -31,7 +31,6 @@ const Favoris = () => {
                 <Card.Text>
                   <strong>Auteur:</strong> {book.author}<br />
                   <strong>Pages:</strong> {book.pages}<br />
-                  <strong>Publié le:</strong> {book.published}
                 </Card.Text>
               </Card.Body>
             </Card>
