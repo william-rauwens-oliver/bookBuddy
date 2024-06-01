@@ -17,10 +17,8 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// Port d'écoute du serveur
 const PORT = process.env.PORT || 5000;
 
-// Connexion à MongoDB
 mongoose.connect('mongodb://localhost:27017/bookApp', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -60,17 +58,13 @@ app.put('/api/statut/:bookId', async (req, res) => {
   try {
     const { bookId } = req.params;
     const { status, currentPage } = req.body;
-
-    // Vérifiez que la valeur de currentPage est un nombre valide
     const pageNumber = parseInt(currentPage);
     if (isNaN(pageNumber)) {
       throw new Error('currentPage doit être un nombre valide');
     }
 
-    // Vérifiez si une entrée de statut existe déjà pour ce livre
     let existingStatus = await Status.findOne({ bookId });
 
-    // Si aucune entrée de statut n'existe, créez-en une
     if (!existingStatus) {
       existingStatus = new Status({
         bookId,
@@ -78,12 +72,10 @@ app.put('/api/statut/:bookId', async (req, res) => {
         currentPage: pageNumber
       });
     } else {
-      // Sinon, mettez à jour l'entrée de statut existante
       existingStatus.status = status;
       existingStatus.currentPage = pageNumber;
     }
 
-    // Enregistrez ou mettez à jour l'entrée de statut dans la base de données MongoDB
     await existingStatus.save();
 
     res.status(200).json({ message: 'Statut de lecture mis à jour avec succès' });
@@ -96,15 +88,12 @@ app.put('/api/statut/:bookId', async (req, res) => {
 // Route pour ajouter un livre aux favoris
 app.post('/api/favorites', async (req, res) => {
   console.log(req.body,'toto')
-  // Récupération des données du livre à ajouter aux favoris depuis le corps de la requête
   let { title, author, pages, published } = req.body;
   
-  // Vérification de la valeur de pages
   if (!pages) {
     pages = 1;
   }
   
-  // Création d'une nouvelle instance de livre
   const newFavoris = new Favoris({
     title,
     author,
@@ -116,10 +105,8 @@ app.post('/api/favorites', async (req, res) => {
     // Enregistrement du livre dans la base de données MongoDB
     const toto = await newFavoris.save(newFavoris);
     console.log(toto,'titi')
-    // Réponse réussie
     res.status(201).json({ message: 'Livre ajouté aux favoris avec succès', book: toto });
   } catch (error) {
-    // Gestion des erreurs
     console.error('Erreur lors de l\'ajout du livre aux favoris', error);
     res.status(403).json({ message: 'Erreur du serveur' });
   }
@@ -139,23 +126,18 @@ app.get('/api/favoris', async (req, res) => {
 // Route pour ajouter un nouveau livre
 app.post('/api/books', async (req, res) => {
   try {
-    // Récupération des données du livre à partir du corps de la requête
     const { title, author, pages } = req.body;
 
-    // Création d'une nouvelle instance de livre
     const newBook = new Book({
       title,
       author,
       pages,
     });
 
-    // Enregistrement du livre dans la base de données MongoDB
     await newBook.save();
 
-    // Réponse réussie
     res.status(201).json({ message: 'Livre ajouté avec succès' });
   } catch (error) {
-    // Gestion des erreurs
     console.error('Erreur lors de l\'ajout du livre', error);
     res.status(500).json({ message: 'Erreur du serveur' });
   }
