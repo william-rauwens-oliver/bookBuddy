@@ -1,24 +1,77 @@
+/* Ajout d'une police personnalisée */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body {
-    background-color: #f8f9fa;
-  }
-  
-  .navbar {
+    background-color: #f0f2f5;
+    font-family: 'Roboto', sans-serif;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .jumbotron {
+    background-color: #007bff;
+}
+
+.jumbotron {
     background-color: #ffffff;
-  }
-  
-  .card {
-    transition: transform 0.2s;
-  }
-  
-  .card:hover {
+    padding: 2rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+}
+
+.card:hover {
     transform: scale(1.05);
-  }
-  
-  h1, h4 {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.btn-custom {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+h1, h4 {
     color: #007bff;
-  }
-  
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+.spinner-border {
+    color: #007bff;
+}
+
+.text-right {
+    text-align: right;
+}
