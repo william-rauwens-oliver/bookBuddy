@@ -22,16 +22,16 @@ const Favoris = () => {
   }, []);
 
   return (
-    <Container className="text-center">
-      <h1 className="my-4 text-right">Mes Favoris</h1>
-      {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" role="status">
-            <span className="sr-only">Chargement...</span>
-          </Spinner>
-        </div>
-      ) : (
-        <>
+    <div className="favorite-container">
+      <h1 className="my-4 text-center">Mes Favoris</h1>
+      <Container className="text-center">
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" role="status">
+              <span className="sr-only">Chargement...</span>
+            </Spinner>
+          </div>
+        ) : (
           <Row>
             {favorites.map((book) => (
               <Col key={book._id} className="mb-4">
@@ -47,9 +47,9 @@ const Favoris = () => {
               </Col>
             ))}
           </Row>
-        </>
-      )}
-    </Container>
+        )}
+      </Container>
+    </div>
   );
 };
 
