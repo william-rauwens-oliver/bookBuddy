@@ -173,7 +173,6 @@ const Collection = () => {
                     </form>
                   </div>
                 )}
-                <button onClick={() => handleBookDetails(bookId)} className="btn btn-primary">Détails</button>
                 <button onClick={() => markAsFavorite(bookId)} className="btn btn-secondary">Favori</button>
               </div>
             </div>
